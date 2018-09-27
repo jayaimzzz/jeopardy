@@ -30,7 +30,7 @@ class Grid {
         this.element = wrapper
         // dest.appendChild(wrapper);
     }
-    displayOnPage (destination){
+    displayOnPage(destination) {
         destination.appendChild(this.element);
     }
 
@@ -50,12 +50,12 @@ class Grid {
             [-1, 1]
         ]
         let neighbors = [];
-        for (let i = 0; i < neighborCordinates.length; i++) {  
+        for (let i = 0; i < neighborCordinates.length; i++) {
             let neighbor = this.gridArray[cell.columnNumber + neighborCordinates[i][0]][cell.rowNumber + neighborCordinates[i][1]]
-            if (neighbor){
+            if (neighbor) {
                 neighbors.push(neighbor)
             }
-        } 
+        }
         return neighbors
     }
     forEachCell(callBackFunction) {
@@ -74,7 +74,26 @@ class Grid {
 }
 
 class JeopardyGrid extends Grid {
-    constructor(options){
+    constructor(options) {
         super(options);
+    }
+
+    async getClues(categories) {
+        let allCluesArray = []
+        for (let i = 0; i < categories.length; i++) {
+            let cluesArray = [];
+            const categoryID = categories[i].id
+            const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+            const wetCategory = await category.json();
+            for (let j = 100; j <= 500; j = j + 100) {
+
+                const clues = wetCategory.clues.filter(clue => clue.value === j)
+                const clue = clues[Math.floor(Math.random() * clues.length)]
+                cluesArray.push(clue)
+            }
+            allCluesArray.push(cluesArray);
+        }
+        console.log(allCluesArray)
+        return allCluesArray;
     }
 }

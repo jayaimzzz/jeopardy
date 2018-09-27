@@ -25,7 +25,12 @@ class Cell {
     removeClickEventListner(callBackFunction) {
         this.cellDiv.removeEventListener('click', callBackFunction);
     }
-
+    displayInCell(text){
+        let t = document.createTextNode(text);
+        let span = document.createElement('span');
+        span.appendChild(t);
+        this.cellDiv.appendChild(span)
+    }
 }
 
 class JeopardyCell extends Cell {
@@ -33,4 +38,11 @@ class JeopardyCell extends Cell {
         super(options)
         this.question = 'yes'
     }
+    // async getClue(categoryID, value){
+    //     const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+    //     const wetCategory = await category.json();
+    //     const clues = wetCategory.clues.filter(clue => clue.value === value);
+    //     const clue = clues[Math.floor(Math.random() * clues.length)]
+    //     return clue
+    // }
 }
