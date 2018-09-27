@@ -7,8 +7,8 @@ let categories = [
     {name: 'Mythology', id: 680} 
 ]
 let grid1 = new JeopardyGrid({
-    numberOfRows: 5,
-    numberOfColumns: 6,
+    numberOfRows: 6,
+    numberOfColumns: 5,
     cellType: JeopardyCell
 })
 let contestant = new Contestant('Sam');
@@ -21,5 +21,4 @@ grid1.displayOnPage(dest)
 //     const clue = clues[Math.floor(Math.random() * clues.length)]
 //     console.log(clue)
 // }
-grid1.getClues(categories)
-// grid1.addCategories(categories)
+let clues = grid1.getClues(categories)

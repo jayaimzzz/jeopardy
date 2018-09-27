@@ -20,7 +20,7 @@ class Grid {
             for (let r = 0; r < options.numberOfRows; r++) {
                 const cell = new this.cellType(c, r);
                 let cellDiv = cell.createCellDiv();
-                cell.addClickEventListner(this.hello.bind(this))
+                // cell.addClickEventListner(this.hello.bind(this))
                 column.push(cell);
                 columnDiv.appendChild(cellDiv)
             }
@@ -81,19 +81,26 @@ class JeopardyGrid extends Grid {
     async getClues(categories) {
         let allCluesArray = []
         for (let i = 0; i < categories.length; i++) {
+            let cell = this.searchForCell(i,0)
+            cell.displayInCell(categories[i].name)
             let cluesArray = [];
             const categoryID = categories[i].id
             const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
             const wetCategory = await category.json();
-            for (let j = 100; j <= 500; j = j + 100) {
-
-                const clues = wetCategory.clues.filter(clue => clue.value === j)
-                const clue = clues[Math.floor(Math.random() * clues.length)]
-                cluesArray.push(clue)
+            for (let j = 1; j <= 5; j++) {
+                cell = this.searchForCell(i,j)
+                const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
+                const clue = clues[Math.floor(Math.random() * clues.length)];
+                cell.displayInCell(j * 100)
+                cluesArray.push(clue);
+                cell.addClickEventListner(this.showQuestion.bind(this))
             }
             allCluesArray.push(cluesArray);
         }
-        console.log(allCluesArray)
-        return allCluesArray;
     }
+    showQuestion(event){
+        let cell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
+        cell.displayInCell()
+    }
+
 }

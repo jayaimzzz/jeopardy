@@ -29,14 +29,17 @@ class Cell {
         let t = document.createTextNode(text);
         let span = document.createElement('span');
         span.appendChild(t);
+        this.cellDiv.innerHTML = ''
         this.cellDiv.appendChild(span)
     }
 }
 
 class JeopardyCell extends Cell {
-    constructor(options){
-        super(options)
-        this.question = 'yes'
+    constructor(r,c,options){
+        super(r,c,options);
+        // this.question = options.question;
+        // this.answer = options.answer;
+        // this.value = options.value;
     }
     // async getClue(categoryID, value){
     //     const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
