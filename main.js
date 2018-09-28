@@ -9,7 +9,8 @@ let categories = [
 let grid1 = new JeopardyGrid({
     numberOfRows: 6,
     numberOfColumns: 5,
-    cellType: JeopardyCell
+    cellType: JeopardyCell,
+    name: 'JeopardyGrid'
 })
 let contestant = new Contestant('Sam');
 grid1.displayOnPage(dest)

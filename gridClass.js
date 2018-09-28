@@ -76,6 +76,14 @@ class Grid {
 class JeopardyGrid extends Grid {
     constructor(options) {
         super(options);
+        let topRow = this.createTopRow();
+        this.element.insertBefore(topRow,this.element.childNodes[0])
+    }
+
+    createTopRow(){
+        let row = document.createElement('div');
+        row.className = 'topRow';
+        return row;
     }
 
     async getClues(categories) {
@@ -91,7 +99,8 @@ class JeopardyGrid extends Grid {
                 cell = this.searchForCell(i,j)
                 const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
                 const clue = clues[Math.floor(Math.random() * clues.length)];
-                cell.displayInCell(j * 100)
+                cell.clue = clue
+                cell.displayInCell(cell.clue.value)
                 cluesArray.push(clue);
                 cell.addClickEventListner(this.showQuestion.bind(this))
             }
@@ -100,7 +109,7 @@ class JeopardyGrid extends Grid {
     }
     showQuestion(event){
         let cell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
-        cell.displayInCell()
+        cell.displayInCell(cell.clue.question);
     }
 
 }

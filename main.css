@@ -5,5 +5,12 @@
     border: 1px solid black;
 }
 .grid {
+   flex-wrap: wrap;
    
+}
+
+.topRow {
+    height: 100px;
+    width: 500px;
+    background-color: pink;
 }
