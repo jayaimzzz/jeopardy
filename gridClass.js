@@ -1,5 +1,6 @@
 class Grid {
     constructor(options) {
+        this.destination = document.getElementById(options.destination)
         this.cellType = options.cellType || Cell;
         let gridArray = [];
         this.gridArray = gridArray;
@@ -28,6 +29,7 @@ class Grid {
             wrapper.appendChild(columnDiv);
         }
         this.element = wrapper
+        this.destination.appendChild(this.element)
         // dest.appendChild(wrapper);
     }
     displayOnPage(destination) {
@@ -76,16 +78,47 @@ class Grid {
 class JeopardyGrid extends Grid {
     constructor(options) {
         super(options);
-        let topRow = this.createTopRow();
-        this.element.insertBefore(topRow,this.element.childNodes[0])
+        this.getClues(options.categories);
+        this.createBottomRow();
+        this.answer = '';
     }
 
-    createTopRow(){
+    createBottomRow(){
         let row = document.createElement('div');
-        row.className = 'topRow';
-        return row;
+        row.className = 'bottomRow';
+        row.id = 'bottomRow';
+        this.bottomRow = row
+        this.destination.appendChild(row)
     }
 
+    displayInBottomRow(text){
+        let t = document.createTextNode(text);
+        let span = document.createElement('span');
+        let br = document.createElement('br');
+        span.appendChild(t);
+        this.bottomRow.appendChild(span);
+        this.bottomRow.appendChild(br);
+        
+    }
+    clearBottomRow(){
+        this.bottomRow.innerHTML = ''
+    }
+    showInputBox(){
+        let input = document.createElement('input');
+        let t = document.createTextNode('What is ');
+        input.id = 'inputText';
+        this.bottomRow.appendChild(t);
+        this.bottomRow.appendChild(input)
+    }
+    displaySubmitButton() {
+        let button = document.createElement('button');
+        button.textContent = 'Submit';
+        button.addEventListener('click', this.submit.bind(this))
+        this.bottomRow.appendChild(button)
+    }
+    
+    
+    
     async getClues(categories) {
         let allCluesArray = []
         for (let i = 0; i < categories.length; i++) {
@@ -108,8 +141,25 @@ class JeopardyGrid extends Grid {
         }
     }
     showQuestion(event){
-        let cell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
-        cell.displayInCell(cell.clue.question);
+        this.clearBottomRow();
+        this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
+        this.currentCell.cellDiv.classList.add('currentCell')
+        this.displayInBottomRow(this.currentCell.clue.question + '.');
+        this.showInputBox();
+        this.displaySubmitButton(this.currentCell.clue.answer);
+         
     }
-
+    submit(){
+        let answer = this.currentCell.clue.answer;
+        let userAnswer = document.getElementById('inputText').value;
+        let isCorrect = this.compareAnswer(answer, userAnswer)
+        console.log(isCorrect, answer)
+    }
+    compareAnswer(answer, userAnswer){
+        if (answer === userAnswer){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -9,8 +9,12 @@
    
 }
 
-.topRow {
+.bottomRow {
     height: 100px;
     width: 500px;
     background-color: pink;
+}
+
+.currentCell {
+    background-color: grey;
 }

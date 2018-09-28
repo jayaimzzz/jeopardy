@@ -7,13 +7,15 @@ let categories = [
     {name: 'Mythology', id: 680} 
 ]
 let grid1 = new JeopardyGrid({
+    destination: 'mainWrapper',
     numberOfRows: 6,
     numberOfColumns: 5,
     cellType: JeopardyCell,
-    name: 'JeopardyGrid'
+    name: 'JeopardyGrid',
+    categories: categories
 })
 let contestant = new Contestant('Sam');
-grid1.displayOnPage(dest)
+// grid1.displayOnPage(dest)
 
 // async function getClue(categoryID, value){
 //     const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
@@ -22,4 +24,4 @@ grid1.displayOnPage(dest)
 //     const clue = clues[Math.floor(Math.random() * clues.length)]
 //     console.log(clue)
 // }
-let clues = grid1.getClues(categories)
+// let clues = grid1.getClues(categories)
