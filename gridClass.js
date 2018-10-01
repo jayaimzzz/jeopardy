@@ -70,8 +70,6 @@ class Grid {
     hello(event) {
         let cell = this.searchForCell(event.target.dataset.columnIndex, event.target.dataset.rowIndex)
         cell.setAsClicked();
-        // console.log('Oh hi there. You clicked on', cell, 'and it is now marked as clicked. This meets and possibly exceeds the requirments of this assessment, Travis.')
-        // let cell = this.searchForCell(event.target.dataset.columnIndex, event.target.dataset.rowIndex).call(this);
     }
 }
 
@@ -106,7 +104,7 @@ class JeopardyGrid extends Grid {
     }
     showInputBox(){
         let input = document.createElement('input');
-        let t = document.createTextNode('What is ');
+        let t = document.createTextNode('What/who is ');
         input.id = 'inputText';
         this.bottomRow.appendChild(t);
         this.bottomRow.appendChild(input)
@@ -116,6 +114,12 @@ class JeopardyGrid extends Grid {
         button.textContent = 'Submit';
         button.addEventListener('click', this.submit.bind(this))
         this.bottomRow.appendChild(button)
+    }
+    displaySkipButton() {
+        let button = document.createElement('button');
+        button.textContent = 'Skip';
+        button.addEventListener('click', this.skip.bind(this));
+        this.bottomRow.appendChild(button);
     }
     
     async getClues(categories) {
@@ -129,43 +133,50 @@ class JeopardyGrid extends Grid {
             const wetCategory = await category.json();
             for (let j = 1; j <= 5; j++) {
                 cell = this.searchForCell(i,j)
+                
+                cell.cellDiv.classList.add('money')
                 const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
                 const clue = clues[Math.floor(Math.random() * clues.length)];
                 cell.clue = clue
-                cell.displayInCell(cell.clue.value)
+                cell.displayInCell("$" + cell.clue.value)
                 cluesArray.push(clue);
                 cell.addClickEventListner(this.showQuestion.bind(this))
             }
             allCluesArray.push(cluesArray);
         }
     }
+    // removeEventListenersOnEachCell(){
+    //     for(let i = 0; )
+    // }
     showQuestion(event){
         this.clearBottomRow();
         this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
         this.currentCell.setAsClicked();
-        // this.currentCell.cellDiv.classList.add('currentCell')
         this.currentCell.changeCellColor('grey')
-        //TODO remove event listner is not working
-        this.currentCell.removeClickEventListner(this.showQuestion.bind(this))
-        // this.currentCell.cellDiv.removeEventListener('click',this.showQuestion);
         this.displayInBottomRow(this.currentCell.clue.question + '.');
         this.showInputBox();
         this.displaySubmitButton(this.currentCell.clue.answer);
-         
+        this.displaySkipButton();
+        this.currentCell.removeClickEventListner();
+        
     }
     submit(){
         let answer = this.currentCell.clue.answer.toLowerCase().replace(/[^\w\s]/gi, '');
         let userInput = document.getElementById('inputText').value;
         let userAnswer = userInput.toLowerCase().replace(/[^\w\s]/gi, '');
-        answer = answer.replace('a ','').replace('the ','').replace('is ','').replace(' ','');
-        userAnswer = userAnswer.replace('a ','').replace('the ','').replace('is ','').replace(' ','');
-        // console.log('user Answer',userAnswer)
+        answer = answer.replace('a ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','');
+        userAnswer = userAnswer.replace('a ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','');
         let isCorrect = this.compareAnswer(answer, userAnswer)
         this.contestant.adjustScore(this.currentCell.clue.value, isCorrect)
         this.clearBottomRow();
         this.displayInBottomRow(this.generateMessage(isCorrect,userInput))
-        // console.log(isCorrect, answer)
     }
+    skip(){
+        this.currentCell.changeCellColor('black');
+        this.currentCell.displayInCell('');
+        this.clearBottomRow();
+    }
+
     compareAnswer(answer, userAnswer){
         if (answer === userAnswer){
             return true;
@@ -175,14 +186,12 @@ class JeopardyGrid extends Grid {
     }
     generateMessage(correct,userInput){
         if (correct === true){
-            // console.log('correct');
             this.currentCell.changeCellColor('green')
-            return `Correct! You earned ${this.currentCell.clue.value}. Your score is ${this.contestant.score}.`;
+            return `What/who is ${this.currentCell.clue.answer} is correct! You earned $${this.currentCell.clue.value}. Your score is $${this.contestant.score}.`;
         }
         if (correct === false){
             this.currentCell.changeCellColor('red')
-            // console.log(this.currentCell.clue.answer);
-            return `What is ${userInput} is incorrect. What is ${this.currentCell.clue.answer} is what we where looking for. You lost ${this.currentCell.clue.value}. Your score is ${this.contestant.score}.`;
+            return `What/who is ${userInput} is incorrect. What/who is ${this.currentCell.clue.answer} is what/who we where looking for. You lost $${this.currentCell.clue.value}. Your score is $${this.contestant.score}.`;
         }
     }
 }

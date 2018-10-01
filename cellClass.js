@@ -19,19 +19,20 @@ class Cell {
         this.clicked = true;
     }
     addClickEventListner(callBackFunction) {
+        this.callBackFunction = callBackFunction
         this.cellDiv.addEventListener('click', callBackFunction);
 
     }
-    removeClickEventListner(callBackFunction) {
-        console.log(this.cellDiv)
-        this.cellDiv.removeEventListener('click', callBackFunction);
+    removeClickEventListner() {
+        this.cellDiv.removeEventListener('click', this.callBackFunction);
     }
     displayInCell(text){
         let t = document.createTextNode(text);
-        let span = document.createElement('span');
-        span.appendChild(t);
+        let div = document.createElement('div');
+        div.classList.add('info')
+        div.appendChild(t);
         this.cellDiv.innerHTML = ''
-        this.cellDiv.appendChild(span)
+        this.cellDiv.appendChild(div)
     }
     changeCellColor(color){
         this.cellDiv.style.backgroundColor = color;

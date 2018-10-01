@@ -1,18 +1,33 @@
 .cell {
     height: 100px;
-    width: 100px;
+    width: 120px;
     background-color: blue;
-    border: 1px solid black;
+    border: 3px solid black;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    font-size: 20px;
 }
+
+.info {
+    margin: auto;
+    text-align: center;
+}
+
+.money {
+    color: yellow;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 .grid {
-   flex-wrap: wrap;
-   
+    flex-wrap: wrap;
 }
 
 .bottomRow {
     height: 100px;
     width: 500px;
-    background-color: pink;
+    /* background-color: pink; */
 }
 
 .currentCell {
