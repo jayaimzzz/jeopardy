@@ -23,6 +23,7 @@ class Cell {
 
     }
     removeClickEventListner(callBackFunction) {
+        console.log(this.cellDiv)
         this.cellDiv.removeEventListener('click', callBackFunction);
     }
     displayInCell(text){
@@ -31,6 +32,9 @@ class Cell {
         span.appendChild(t);
         this.cellDiv.innerHTML = ''
         this.cellDiv.appendChild(span)
+    }
+    changeCellColor(color){
+        this.cellDiv.style.backgroundColor = color;
     }
 }
 

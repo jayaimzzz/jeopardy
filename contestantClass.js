@@ -6,5 +6,6 @@ class Contestant {
     adjustScore(amount, answeredCorrectly){
         if (answeredCorrectly === false){amount = amount * -1}
         this.score = this.score + amount;
+        console.log(this.score)
     }
 }

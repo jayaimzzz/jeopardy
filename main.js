@@ -12,9 +12,10 @@ let grid1 = new JeopardyGrid({
     numberOfColumns: 5,
     cellType: JeopardyCell,
     name: 'JeopardyGrid',
-    categories: categories
+    categories: categories,
+    contestantName: 'Sam'
 })
-let contestant = new Contestant('Sam');
+// let contestant = new Contestant('Sam');
 // grid1.displayOnPage(dest)
 
 // async function getClue(categoryID, value){
