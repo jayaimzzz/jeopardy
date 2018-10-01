@@ -140,14 +140,31 @@ class JeopardyGrid extends Grid {
                 cell.clue = clue
                 cell.displayInCell("$" + cell.clue.value)
                 cluesArray.push(clue);
-                cell.addClickEventListner(this.showQuestion.bind(this))
+                cell.addClickEventListner(this.showQuestion.bind(this));
             }
             allCluesArray.push(cluesArray);
         }
     }
-    // removeEventListenersOnEachCell(){
-    //     for(let i = 0; )
-    // }
+    removeEventListenersOnEachCell(){
+        for(let i = 0; i< categories.length; i++){
+            for(let j = 1; j <= 5; j++){
+                let cell = this.searchForCell(i,j);
+                // if (cell.clicked === false){
+                    cell.removeClickEventListner();
+                // }
+            }
+        }
+    }
+    addEventListenersOnEachCell(){
+        for(let i = 0; i< categories.length; i++){
+            for(let j = 1; j <= 5; j++){
+                let cell = this.searchForCell(i,j);
+                if (cell.clicked === false){
+                    cell.addClickEventListner(this.showQuestion.bind(this));
+                }
+            }
+        }
+    }
     showQuestion(event){
         this.clearBottomRow();
         this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
@@ -157,7 +174,8 @@ class JeopardyGrid extends Grid {
         this.showInputBox();
         this.displaySubmitButton(this.currentCell.clue.answer);
         this.displaySkipButton();
-        this.currentCell.removeClickEventListner();
+        // this.currentCell.removeClickEventListner();
+        this.removeEventListenersOnEachCell();
         
     }
     submit(){
@@ -170,11 +188,14 @@ class JeopardyGrid extends Grid {
         this.contestant.adjustScore(this.currentCell.clue.value, isCorrect)
         this.clearBottomRow();
         this.displayInBottomRow(this.generateMessage(isCorrect,userInput))
+        this.addEventListenersOnEachCell();
     }
     skip(){
         this.currentCell.changeCellColor('black');
         this.currentCell.displayInCell('');
         this.clearBottomRow();
+        this.addEventListenersOnEachCell();
+        this.displayInBottomRow(`What/who is ${this.currentCell.clue.answer}`)
     }
 
     compareAnswer(answer, userAnswer){
