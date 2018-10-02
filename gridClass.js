@@ -129,7 +129,7 @@ class JeopardyGrid extends Grid {
             cell.displayInCell(categories[i].name)
             let cluesArray = [];
             const categoryID = categories[i].id
-            const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+            const category = await fetch('//jservice.io/api/category?id=' + categoryID);
             const wetCategory = await category.json();
             for (let j = 1; j <= 5; j++) {
                 cell = this.searchForCell(i,j)
