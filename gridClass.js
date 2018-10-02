@@ -135,16 +135,17 @@ class JeopardyGrid extends Grid {
             for (let j = 1; j <= 5; j++) {
                 cell = this.searchForCell(i,j)
                 
-                cell.cellDiv.classList.add('money','hover')
+                cell.cellDiv.classList.add('money')
                 const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
                 const clue = clues[Math.floor(Math.random() * clues.length)];
                 cell.clue = clue
                 cell.displayInCell("$" + cell.clue.value)
                 cluesArray.push(clue);
-                cell.addClickEventListner(this.showQuestion.bind(this));
+                // cell.addClickEventListner(this.showQuestion.bind(this));
             }
             allCluesArray.push(cluesArray);
         }
+        this.addEventListenersOnEachCell();
     }
     checkForEnd(){
         let result = true
