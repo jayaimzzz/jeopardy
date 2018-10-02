@@ -6,7 +6,13 @@
     border-radius: 10px;
     color: white;
     display: flex;
-    font-size: 20px;
+    font-size: 20px;    
+}
+/* .money:hover{
+    background-color: white;
+} */
+.hover:hover{
+    background-color: white;
 }
 
 .info {
@@ -32,4 +38,21 @@
 
 .currentCell {
     background-color: grey;
+}
+
+#endMessage {
+    display: flex;
+    width: 40vw;
+    height: 20vh;
+    background-color: white;
+    position: absolute;
+    left: 30vw;
+    top: 30vh;
+    border-radius: 10px;
+}
+
+#endMessageText{
+    text-align: center;
+    margin: auto;
+
 }

@@ -129,12 +129,13 @@ class JeopardyGrid extends Grid {
             cell.displayInCell(categories[i].name)
             let cluesArray = [];
             const categoryID = categories[i].id
-            const category = await fetch('//jservice.io/api/category?id=' + categoryID);
+            const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+            // const category = await fetch('https://cors-anywhere.herokuapp.com/http://jservice.io/api/category?id=' + categoryID);
             const wetCategory = await category.json();
             for (let j = 1; j <= 5; j++) {
                 cell = this.searchForCell(i,j)
                 
-                cell.cellDiv.classList.add('money')
+                cell.cellDiv.classList.add('money','hover')
                 const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
                 const clue = clues[Math.floor(Math.random() * clues.length)];
                 cell.clue = clue
@@ -145,12 +146,27 @@ class JeopardyGrid extends Grid {
             allCluesArray.push(cluesArray);
         }
     }
+    checkForEnd(){
+        let result = true
+        for(let i = 0; i< categories.length; i++){
+            for(let j = 1; j <= 5; j++){
+                let cell = this.searchForCell(i,j);
+                if(cell.clicked === false){
+                    j = 5;
+                    i = categories.length;
+                    result = false;
+                } 
+            }
+        }
+        return result;
+    }
     removeEventListenersOnEachCell(){
         for(let i = 0; i< categories.length; i++){
             for(let j = 1; j <= 5; j++){
                 let cell = this.searchForCell(i,j);
                 // if (cell.clicked === false){
                     cell.removeClickEventListner();
+                    cell.cellDiv.classList.remove('hover')
                 // }
             }
         }
@@ -161,6 +177,7 @@ class JeopardyGrid extends Grid {
                 let cell = this.searchForCell(i,j);
                 if (cell.clicked === false){
                     cell.addClickEventListner(this.showQuestion.bind(this));
+                    cell.cellDiv.classList.add('hover')
                 }
             }
         }
@@ -181,14 +198,20 @@ class JeopardyGrid extends Grid {
     submit(){
         let answer = this.currentCell.clue.answer.toLowerCase().replace(/[^\w\s]/gi, '');
         let userInput = document.getElementById('inputText').value;
+        // console.log(userInput)
         let userAnswer = userInput.toLowerCase().replace(/[^\w\s]/gi, '');
-        answer = answer.replace('a ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','');
-        userAnswer = userAnswer.replace('a ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','');
+        answer = answer.replace('a ','').replace('an ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','').replace('its ','');
+        userAnswer = userAnswer.replace('a ','').replace('an ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','').replace('its ','');
+        //TODO use a regex to accomplish the above (removing of the words 'a ', 'the ', etc.)
+        // answer = answer.replace(/'a '||'the '||'is '||'its '||' '||'s'||'es'/,'');
+        // userAnswer = userAnswer.replace(/a /the /it /its / /s/es,'');
+        // console.log(userAnswer)
         let isCorrect = this.compareAnswer(answer, userAnswer)
         this.contestant.adjustScore(this.currentCell.clue.value, isCorrect)
         this.clearBottomRow();
         this.displayInBottomRow(this.generateMessage(isCorrect,userInput))
         this.addEventListenersOnEachCell();
+        if(this.checkForEnd() === true){this.displayEndMessage()}
     }
     skip(){
         this.currentCell.changeCellColor('black');
@@ -196,6 +219,26 @@ class JeopardyGrid extends Grid {
         this.clearBottomRow();
         this.addEventListenersOnEachCell();
         this.displayInBottomRow(`What/who is ${this.currentCell.clue.answer}`)
+        if(this.checkForEnd() === true){this.displayEndMessage()}
+    }
+
+    displayEndMessage(){
+        
+        let text;
+        if(this.contestant.score > 0) {
+            text = 'You won! Final score is $' +  this.contestant.score + '.';
+        } else {
+            text = 'You lost.  You owe Jeopardy $' + this.contestant.score * -1 + '.';
+        }
+        console.log(text)
+        let t = document.createTextNode(text);
+        let innerDiv = document.createElement('div');
+        innerDiv.id = 'endMessageText'
+        let div = document.createElement('div');
+        div.id = 'endMessage';
+        innerDiv.appendChild(t);
+        div.appendChild(innerDiv);
+        this.destination.appendChild(div);
     }
 
     compareAnswer(answer, userAnswer){
