@@ -77,12 +77,13 @@ class JeopardyGrid extends Grid {
     constructor(options) {
         super(options);
         this.getClues(options.categories);
+        // this.displayTimer();
         this.createBottomRow();
         this.answer = '';
         this.contestant = new Contestant(options.contestantName);
     }
 
-    createBottomRow(){
+    createBottomRow() {
         let row = document.createElement('div');
         row.className = 'bottomRow';
         row.id = 'bottomRow';
@@ -90,19 +91,19 @@ class JeopardyGrid extends Grid {
         this.destination.appendChild(row)
     }
 
-    displayInBottomRow(text){
+    displayInBottomRow(text) {
         let t = document.createTextNode(text);
         let span = document.createElement('span');
         let br = document.createElement('br');
         span.appendChild(t);
         this.bottomRow.appendChild(span);
         this.bottomRow.appendChild(br);
-        
+
     }
-    clearBottomRow(){
+    clearBottomRow() {
         this.bottomRow.innerHTML = ''
     }
-    showInputBox(){
+    showInputBox() {
         let input = document.createElement('input');
         let t = document.createTextNode('What/who is ');
         input.id = 'inputText';
@@ -121,20 +122,20 @@ class JeopardyGrid extends Grid {
         button.addEventListener('click', this.skip.bind(this));
         this.bottomRow.appendChild(button);
     }
-    
+
     async getClues(categories) {
         let allCluesArray = []
         for (let i = 0; i < categories.length; i++) {
-            let cell = this.searchForCell(i,0)
+            let cell = this.searchForCell(i, 0)
             cell.displayInCell(categories[i].name)
             let cluesArray = [];
             const categoryID = categories[i].id
-            // const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
-            const category = await fetch('https://cors-anywhere.herokuapp.com/http://jservice.io/api/category?id=' + categoryID);
+            const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+            // const category = await fetch('https://cors-anywhere.herokuapp.com/http://jservice.io/api/category?id=' + categoryID);
             const wetCategory = await category.json();
             for (let j = 1; j <= 5; j++) {
-                cell = this.searchForCell(i,j)
-                
+                cell = this.searchForCell(i, j)
+
                 cell.cellDiv.classList.add('money')
                 const clues = wetCategory.clues.filter(clue => clue.value === j * 100);
                 const clue = clues[Math.floor(Math.random() * clues.length)];
@@ -147,45 +148,45 @@ class JeopardyGrid extends Grid {
         }
         this.addEventListenersOnEachCell();
     }
-    checkForEnd(){
+    checkForEnd() {
         let result = true
-        for(let i = 0; i< categories.length; i++){
-            for(let j = 1; j <= 5; j++){
-                let cell = this.searchForCell(i,j);
-                if(cell.clicked === false){
+        for (let i = 0; i < categories.length; i++) {
+            for (let j = 1; j <= 5; j++) {
+                let cell = this.searchForCell(i, j);
+                if (cell.clicked === false) {
                     j = 5;
                     i = categories.length;
                     result = false;
-                } 
+                }
             }
         }
         return result;
     }
-    removeEventListenersOnEachCell(){
-        for(let i = 0; i< categories.length; i++){
-            for(let j = 1; j <= 5; j++){
-                let cell = this.searchForCell(i,j);
+    removeEventListenersOnEachCell() {
+        for (let i = 0; i < categories.length; i++) {
+            for (let j = 1; j <= 5; j++) {
+                let cell = this.searchForCell(i, j);
                 // if (cell.clicked === false){
-                    cell.removeClickEventListner();
-                    cell.cellDiv.classList.remove('hover')
+                cell.removeClickEventListner();
+                cell.cellDiv.classList.remove('hover')
                 // }
             }
         }
     }
-    addEventListenersOnEachCell(){
-        for(let i = 0; i< categories.length; i++){
-            for(let j = 1; j <= 5; j++){
-                let cell = this.searchForCell(i,j);
-                if (cell.clicked === false){
+    addEventListenersOnEachCell() {
+        for (let i = 0; i < categories.length; i++) {
+            for (let j = 1; j <= 5; j++) {
+                let cell = this.searchForCell(i, j);
+                if (cell.clicked === false) {
                     cell.addClickEventListner(this.showQuestion.bind(this));
                     cell.cellDiv.classList.add('hover')
                 }
             }
         }
     }
-    showQuestion(event){
+    showQuestion(event) {
         this.clearBottomRow();
-        this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex,event.currentTarget.dataset.rowIndex);
+        this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex, event.currentTarget.dataset.rowIndex);
         this.currentCell.setAsClicked();
         this.currentCell.changeCellColor('grey')
         this.displayInBottomRow(this.currentCell.clue.question + '.');
@@ -194,15 +195,15 @@ class JeopardyGrid extends Grid {
         this.displaySkipButton();
         // this.currentCell.removeClickEventListner();
         this.removeEventListenersOnEachCell();
-        
+
     }
-    submit(){
+    submit() {
         let answer = this.currentCell.clue.answer.toLowerCase().replace(/[^\w\s]/gi, '');
         let userInput = document.getElementById('inputText').value;
         // console.log(userInput)
         let userAnswer = userInput.toLowerCase().replace(/[^\w\s]/gi, '');
-        answer = answer.replace('a ','').replace('an ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','').replace('its ','');
-        userAnswer = userAnswer.replace('a ','').replace('an ','').replace('the ','').replace('is ','').replace(' ','').replace('s','').replace('es','').replace('its ','');
+        answer = answer.replace('a ', '').replace('an ', '').replace('the ', '').replace('is ', '').replace(' ', '').replace('s', '').replace('es', '').replace('its ', '');
+        userAnswer = userAnswer.replace('a ', '').replace('an ', '').replace('the ', '').replace('is ', '').replace(' ', '').replace('s', '').replace('es', '').replace('its ', '');
         //TODO use a regex to accomplish the above (removing of the words 'a ', 'the ', etc.)
         // answer = answer.replace(/'a '||'the '||'is '||'its '||' '||'s'||'es'/,'');
         // userAnswer = userAnswer.replace(/a /the /it /its / /s/es,'');
@@ -210,24 +211,29 @@ class JeopardyGrid extends Grid {
         let isCorrect = this.compareAnswer(answer, userAnswer)
         this.contestant.adjustScore(this.currentCell.clue.value, isCorrect)
         this.clearBottomRow();
-        this.displayInBottomRow(this.generateMessage(isCorrect,userInput))
+        this.displayInBottomRow(this.generateMessage(isCorrect, userInput))
         this.addEventListenersOnEachCell();
-        if(this.checkForEnd() === true){this.displayEndMessage()}
+        if (this.checkForEnd() === true) {
+            this.displayEndMessage()
+        }
     }
-    skip(){
+    skip() {
         this.currentCell.changeCellColor('black');
         this.currentCell.displayInCell('');
         this.clearBottomRow();
         this.addEventListenersOnEachCell();
         this.displayInBottomRow(`What/who is ${this.currentCell.clue.answer}`)
-        if(this.checkForEnd() === true){this.displayEndMessage()}
+        if (this.checkForEnd() === true) {
+            this.displayEndMessage()
+        }
     }
 
-    displayEndMessage(){
-        
+
+    displayEndMessage() {
+
         let text;
-        if(this.contestant.score > 0) {
-            text = 'You won! Final score is $' +  this.contestant.score + '.';
+        if (this.contestant.score > 0) {
+            text = 'You won! Final score is $' + this.contestant.score + '.';
         } else {
             text = 'You lost.  You owe Jeopardy $' + this.contestant.score * -1 + '.';
         }
@@ -242,19 +248,42 @@ class JeopardyGrid extends Grid {
         this.destination.appendChild(div);
     }
 
-    compareAnswer(answer, userAnswer){
-        if (answer === userAnswer){
+    displayTimer() {
+        let timer = document.createElement('div');
+        timer.id = 'timer'
+        this.createTimerLights(timer);
+        this.destination.appendChild(timer);
+    }
+    createTimerLight(id) {
+        let light = document.createElement('div');
+        light.id = id;
+        light.className = 'light'
+        return light;
+    }
+    createTimerLights(destination) {
+        for (let i = 0; i < 10; i++) {
+            let light = this.createTimerLight('timer' + i);
+            destination.appendChild(light);
+        }
+        for (let i = 10; i >= 0; i--) {
+            let light = this.createTimerLight('timer' + i);
+            destination.appendChild(light);
+        }
+    }
+
+    compareAnswer(answer, userAnswer) {
+        if (answer === userAnswer) {
             return true;
         } else {
             return false;
         }
     }
-    generateMessage(correct,userInput){
-        if (correct === true){
+    generateMessage(correct, userInput) {
+        if (correct === true) {
             this.currentCell.changeCellColor('green')
             return `What/who is ${this.currentCell.clue.answer} is correct! You earned $${this.currentCell.clue.value}. Your score is $${this.contestant.score}.`;
         }
-        if (correct === false){
+        if (correct === false) {
             this.currentCell.changeCellColor('red')
             return `What/who is ${userInput} is incorrect. What/who is ${this.currentCell.clue.answer} is what/who we where looking for. You lost $${this.currentCell.clue.value}. Your score is $${this.contestant.score}.`;
         }

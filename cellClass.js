@@ -53,4 +53,5 @@ class JeopardyCell extends Cell {
     //     const clue = clues[Math.floor(Math.random() * clues.length)]
     //     return clue
     // }
+    
 }

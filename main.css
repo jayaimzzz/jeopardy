@@ -56,3 +56,20 @@
     margin: auto;
 
 }
+
+#timer{
+    /* margin-bottom: 5px; */
+    margin-top: 5px;
+    display: flex;
+    /* background-color: pink; */
+    width: 630px;
+    height: 20px;
+}
+
+.light{
+    margin-right: 5px;
+    margin-left: 5px;
+    background-color: orange;
+    width: 20px;
+    height: 10px;
+}
