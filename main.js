@@ -6,6 +6,7 @@ let categories = [
     {name: 'Body Language', id: 897},
     {name: 'Mythology', id: 680} 
 ]
+
 let grid1 = new JeopardyGrid({
     destination: 'mainWrapper',
     numberOfRows: 6,
@@ -15,6 +16,7 @@ let grid1 = new JeopardyGrid({
     categories: categories,
     contestantName: 'Sam'
 })
+
 // let contestant = new Contestant('Sam');
 // grid1.displayOnPage(dest)
 

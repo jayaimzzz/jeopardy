@@ -37,7 +37,7 @@
 }
 
 .currentCell {
-    background-color: grey;
+    /* background-color: grey; */
 }
 
 #endMessage {
@@ -69,7 +69,15 @@
 .light{
     margin-right: 5px;
     margin-left: 5px;
-    background-color: orange;
+    background-color: grey;
     width: 20px;
     height: 10px;
 }
+
+/* .lightOff{
+    margin-right: 5px;
+    margin-left: 5px;
+    background-color: grey;
+    width: 20px;
+    height: 10px;
+} */

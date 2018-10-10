@@ -76,11 +76,18 @@ class Grid {
 class JeopardyGrid extends Grid {
     constructor(options) {
         super(options);
-        this.getClues(options.categories);
-        // this.displayTimer();
+        this.options = options;
+        this.initGame();
+
+    }
+    initGame() {
+        this.getClues(this.options.categories);
+        this.displayTimer();
         this.createBottomRow();
+        this.displayResetButton();
+        this.timer = 0;
         this.answer = '';
-        this.contestant = new Contestant(options.contestantName);
+        this.contestant = new Contestant(this.options.contestantName);
     }
 
     createBottomRow() {
@@ -122,6 +129,26 @@ class JeopardyGrid extends Grid {
         button.addEventListener('click', this.skip.bind(this));
         this.bottomRow.appendChild(button);
     }
+    displayResetButton() {
+        let text = document.createTextNode('Reset Game');
+        let button = document.createElement('button');
+        button.appendChild(text);
+        let bindedResetGame = this.resetGame.bind(this)
+        button.addEventListener('click', bindedResetGame);
+        this.destination.appendChild(button)
+    }
+    resetGame() {
+        this.destination.innerHTML = ('');
+        this.destination.appendChild(this.element)
+        this.forEachCell(cell => {
+            cell.cellDiv.className = 'cell';
+            cell.clicked = false;
+            cell.changeCellColor('');
+        });
+        this.removeEventListenersOnEachCell();
+        this.initGame();
+        this.stopTimer();
+    }
 
     async getClues(categories) {
         let allCluesArray = []
@@ -130,7 +157,8 @@ class JeopardyGrid extends Grid {
             cell.displayInCell(categories[i].name)
             let cluesArray = [];
             const categoryID = categories[i].id
-            const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
+            const category = await fetch('http://localhost:3000/api/category/' + categoryID);
+            // const category = await fetch('http://jservice.io/api/category?id=' + categoryID);
             // const category = await fetch('https://cors-anywhere.herokuapp.com/http://jservice.io/api/category?id=' + categoryID);
             const wetCategory = await category.json();
             for (let j = 1; j <= 5; j++) {
@@ -185,6 +213,7 @@ class JeopardyGrid extends Grid {
         }
     }
     showQuestion(event) {
+        this.startTimerCountDown();
         this.clearBottomRow();
         this.currentCell = this.searchForCell(event.currentTarget.dataset.columnIndex, event.currentTarget.dataset.rowIndex);
         this.currentCell.setAsClicked();
@@ -198,6 +227,7 @@ class JeopardyGrid extends Grid {
 
     }
     submit() {
+        this.stopTimer();
         let answer = this.currentCell.clue.answer.toLowerCase().replace(/[^\w\s]/gi, '');
         let userInput = document.getElementById('inputText').value;
         // console.log(userInput)
@@ -218,6 +248,7 @@ class JeopardyGrid extends Grid {
         }
     }
     skip() {
+        this.stopTimer();
         this.currentCell.changeCellColor('black');
         this.currentCell.displayInCell('');
         this.clearBottomRow();
@@ -237,7 +268,6 @@ class JeopardyGrid extends Grid {
         } else {
             text = 'You lost.  You owe Jeopardy $' + this.contestant.score * -1 + '.';
         }
-        console.log(text)
         let t = document.createTextNode(text);
         let innerDiv = document.createElement('div');
         innerDiv.id = 'endMessageText'
@@ -254,22 +284,57 @@ class JeopardyGrid extends Grid {
         this.createTimerLights(timer);
         this.destination.appendChild(timer);
     }
-    createTimerLight(id) {
-        let light = document.createElement('div');
-        light.id = id;
-        light.className = 'light'
-        return light;
-    }
+    // createTimerLight(id) {
+    //     let light = document.createElement('div');
+    //     light.id = id;
+    //     light.className = 'lightOn'
+    //     return light;
+    // }
     createTimerLights(destination) {
+        this.lightsArray = []
         for (let i = 0; i < 10; i++) {
-            let light = this.createTimerLight('timer' + i);
-            destination.appendChild(light);
+            // let light = this.createTimerLight('timer' + i);
+            let light = new TimerLight('timer' + i)
+            this.lightsArray.push(light)
+            destination.appendChild(light.lightDiv);
         }
         for (let i = 10; i >= 0; i--) {
-            let light = this.createTimerLight('timer' + i);
-            destination.appendChild(light);
+            // let light = this.createTimerLight('timer' + i);
+            let light = new TimerLight('timer' + i)
+            this.lightsArray.push(light)
+            destination.appendChild(light.lightDiv);
         }
     }
+    startTimerCountDown() {
+        this.turnAllLightsOn();
+        let bindedturnOneLightOff = this.turnOneLightOff.bind(this)
+        this.interval = setInterval(bindedturnOneLightOff, 1500)
+        // for (let i = 10; i >= 0; i--){
+        //     let light = this.lightsArray.filter(light => light.id === 'timer' + i)
+        // setTimeOut(light.forEach(light => light.turnOff()),1000);
+        // }
+        // clearInterval(interval);
+    }
+
+    stopTimer() {
+        clearInterval(this.interval)
+        this.timer = 0;
+    }
+    turnOneLightOff() {
+        let light = this.lightsArray.filter(light => light.id === 'timer' + this.timer)
+        this.timer++
+        light.forEach(light => light.turnOff())
+        if(this.timer === 11){
+            // clearInterval(this.interval);
+            this.skip();
+        }
+    }
+
+    turnAllLightsOn(){
+        this.lightsArray.forEach(light => light.turnOn())
+    }
+
+
 
     compareAnswer(answer, userAnswer) {
         if (answer === userAnswer) {
